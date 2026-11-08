@@ -11,7 +11,9 @@ Checked 8 November 2026 on Windows with Python 3.12.4.
 | Browser interactions | Passed | Chromium at 390?844, 768?1024, 1440?1500 |
 | Mermaid rendering | 5 passed | Actual rendering using Mermaid 11.12.2 |
 | Markdown links and images | Passed | First-party relative references |
-| Public deployment | Pending | Account connection and providers needed |
+| Live provider connections | Passed | Zilliz authentication, 3072-dimension Gemini embedding and generation |
+| Live PDF-to-answer workflow | Passed | Real PDF extraction, embedding, Zilliz retrieval, Gemini answer and source title |
+| Public deployment | Pending | Render account connection and hosting verification needed |
 
 Browser checks upload a generated text PDF, validate required fields, submit a
 question by keyboard, and display an answer and retrieved title. There was no
@@ -39,8 +41,15 @@ it downloads a pinned Mermaid runtime and requires network access.
 
 ## Remaining limitations
 
-- Live Gemini generation, embedding dimensions, Milvus indexing and cloud
-  credentials have not been verified. Provider availability is not inferred from fixtures.
+- Live English ingestion and answering passed against the configured Gemini and
+  Zilliz accounts on 8 November 2026. The test used a temporary collection and a
+  generated single-sentence PDF; the answer matched its seven sensor readings and
+  returned the expected paper title. This is a connectivity and workflow check,
+  not a quality benchmark. Initial collection deletion timed out; a subsequent
+  collection-list check confirmed no temporary test collections remained.
+- Public hosting, live translation and performance under concurrent load remain
+  unverified. Account-specific success does not establish provider availability
+  for other regions or accounts.
 - The translator still uses the inherited unofficial googletrans client and
   legacy HTTP stack. Keep it isolated; upstream compatibility is unverified.
 - Installed dependencies emit deprecation warnings, including the inherited
