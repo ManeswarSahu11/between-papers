@@ -4,7 +4,9 @@
 
 Three Render Docker web services were deployed on 8 November 2026 in Singapore,
 all with `plan: free`, using the Render API. Existing unrelated services were
-preserved. Runtime source commit: `0e62affe945def11068fce93a97093595b7b75d3`.
+preserved. The agent and frontend run document-workspace commit
+`bfd15e692f750a2f88e12a1f2900ee0fdf01ebea`; the unchanged translator runs
+`0e62affe945def11068fce93a97093595b7b75d3`.
 
 | Component | Public endpoint |
 | --- | --- |

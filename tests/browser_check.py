@@ -39,7 +39,9 @@ with sync_playwright() as p:
         page.get_by_role('tab', name='Add a PDF').click()
         page.get_by_role('button', name='Make PDF searchable', exact=True).click()
         page.get_by_text('Choose a PDF and give your document a title.', exact=True).wait_for()
-        page.locator('input[type=file]').set_input_files({'name': 'fixture.pdf', 'mimeType': 'application/pdf', 'buffer': pdf_bytes()})
+        with page.expect_response(lambda response: '/upload_file/' in response.url and response.request.method == 'PUT') as upload:
+            page.locator('input[type=file]').set_input_files({'name': 'fixture.pdf', 'mimeType': 'application/pdf', 'buffer': pdf_bytes()})
+        assert upload.value.ok
         page.get_by_role('textbox', name='Document title', exact=True).fill('Deterministic test paper')
         page.get_by_role('combobox').first.click()
         page.get_by_role('option', name='Security', exact=True).click()

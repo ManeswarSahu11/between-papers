@@ -96,3 +96,13 @@ exclusion. API regressions verify retained appendix text, opt-in exclusion and
 forwarding of both boolean modes. The previous API default is preserved for
 clients that do not send the new field. Caption opacity is explicitly reset to
 keep helper text readable. No OCR, DOCX or image-only PDF support is implied.
+
+The general-PDF release `bfd15e6` passed GitHub CI (33 tests) and public
+phone/tablet/desktop layout checks. A live PDF containing a References heading
+followed by the answer was uploaded through the public interface; Gemini
+returned the correct answer and source document title. A direct collection check
+confirmed both the heading and following text were indexed before the uniquely
+titled test document was removed. Current live screenshots show this release.
+The browser test waits for the file-transfer response before submitting the form.
+Free-service wake-up checks still experienced timeouts; an always-responsive
+service is not claimed. The generic workspace remains limited to text PDFs.
