@@ -29,29 +29,29 @@ with sync_playwright() as p:
         page = browser.new_page(viewport={'width': width, 'height': height})
         page.goto(os.getenv('BROWSER_TEST_URL', 'http://127.0.0.1:18502'))
         page.get_by_role('heading', name='Pagewise', exact=True).wait_for()
-        assert page.get_by_role('tab').first.inner_text() == 'Add a PDF'
-        assert page.get_by_role('tab', name='Add a PDF').get_attribute('aria-selected') == 'true'
+        assert page.get_by_role('tab').first.inner_text() == 'Upload a PDF'
+        assert page.get_by_role('tab', name='Upload a PDF').get_attribute('aria-selected') == 'true'
         assert 'General documents' in page.locator('[role=tabpanel]:visible').get_by_test_id('stSelectbox').first.inner_text()
         assert page.get_by_test_id('stCaptionContainer').first.evaluate("el => getComputedStyle(el).opacity") == '1'
-        page.get_by_role('tab', name='Ask your documents').click()
-        page.get_by_role('button', name='Find an answer').click()
-        page.get_by_text('Enter a question to search your documents.', exact=True).wait_for()
-        page.get_by_role('tab', name='Add a PDF').click()
-        page.get_by_role('button', name='Make PDF searchable', exact=True).click()
-        page.get_by_text('Choose a PDF and give your document a title.', exact=True).wait_for()
+        page.get_by_role('tab', name='Ask questions').click()
+        page.get_by_role('button', name='Get answer').click()
+        page.get_by_text('Enter a question about your documents.', exact=True).wait_for()
+        page.get_by_role('tab', name='Upload a PDF').click()
+        page.get_by_role('button', name='Upload PDF', exact=True).click()
+        page.get_by_text('Choose a PDF and enter a document title.', exact=True).wait_for()
         with page.expect_response(lambda response: '/upload_file/' in response.url and response.request.method == 'PUT') as upload:
             page.locator('input[type=file]').set_input_files({'name': 'fixture.pdf', 'mimeType': 'application/pdf', 'buffer': pdf_bytes()})
         assert upload.value.ok
         page.get_by_role('textbox', name='Document title', exact=True).fill('Deterministic test paper')
         page.get_by_role('combobox').first.click()
         page.get_by_role('option', name='Security', exact=True).click()
-        page.get_by_role('button', name='Make PDF searchable', exact=True).click()
-        page.get_by_text(re.compile('Document ready:')).wait_for()
-        page.get_by_role('tab', name='Ask your documents').click()
+        page.get_by_role('button', name='Upload PDF', exact=True).click()
+        page.get_by_text(re.compile('Ready to use:')).wait_for()
+        page.get_by_role('tab', name='Ask questions').click()
         assert 'Security' in page.locator('[role=tabpanel]:visible').get_by_test_id('stSelectbox').first.inner_text()
         page.get_by_role('textbox', name='Your question').fill('What does the test paper compare?')
         # Verify keyboard submission and a persistent answer.
-        page.get_by_role('button', name='Find an answer').focus()
+        page.get_by_role('button', name='Get answer').focus()
         page.keyboard.press('Enter')
         page.get_by_text(re.compile('This is a test fixture, not a live model answer.')).wait_for()
         page.get_by_role('heading', name='Source documents').wait_for()

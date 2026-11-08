@@ -118,3 +118,14 @@ layout. Pagewise upload/question screenshots are current public captures; older
 live-answer images are retained as historical verification artifacts. Existing
 repository URLs, Render service identifiers and vector collection names remain
 unchanged.
+
+## Clearer workspace copy and layout
+
+Replaced the promotional hero and three introductory cards with a concise
+explanation and upload-first navigation. Upload and question forms now sit
+beside task-specific guidance on wider screens; columns stack on phones.
+Labels, loading states, reference-exclusion guidance and source explanations
+use direct language. Shared-library privacy is visible in the upload view.
+All 33 regression tests passed. Fixture browser checks passed at phone, tablet
+and desktop sizes, including PDF upload, category handoff, keyboard submission,
+answer/source rendering and page-width overflow checks.

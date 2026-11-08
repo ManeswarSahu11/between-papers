@@ -41,117 +41,124 @@ def post(path, **kwargs):
 st.set_page_config(page_title="Pagewise", page_icon=":books:", layout="wide")
 st.markdown("""
 <style>
-.block-container { max-width: 1120px; padding-top: 5rem; padding-bottom: 3rem; }
-h1, h2, h3 { letter-spacing: -0.035em; }
-h1 { font-family: Georgia, serif !important; font-weight: 500 !important; font-size: clamp(2.5rem, 6vw, 4rem) !important; }
-[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p { color: #4b5b55 !important; opacity: 1 !important; }
-[data-testid="stForm"] { border-radius: 16px; background: #ffffff; padding: 1.4rem; }
-[data-baseweb="tab-list"] { gap: 1.25rem; margin-bottom: 1rem; }
-[data-baseweb="tab"] { font-size: 1rem; padding-bottom: 0.8rem; }
-.workspace-kicker { color: #245c50; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.16em; margin-bottom: 0.3rem; }
-.workspace-intro { font-size: 1.12rem; color: #42554c; max-width: 680px; line-height: 1.7; }
-.workflow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1.4rem 0 1.8rem; }
-.workflow-item { border: 1px solid #d8dfd6; border-radius: 12px; padding: 1rem; background: #f2f4ed; }
-.workflow-item b { display: block; color: #203d32; margin-bottom: 0.3rem; }
-.workflow-item span { color: #4b5b55; font-size: 0.9rem; }
+.block-container { max-width: 1160px; padding-top: 4.8rem; padding-bottom: 2rem; }
+h1, h2, h3 { letter-spacing: -0.025em; }
+h1 { font-size: clamp(2.3rem, 5vw, 3rem) !important; font-weight: 650 !important; }
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p { color: #46596b !important; opacity: 1 !important; }
+[data-testid="stForm"] { background: #ffffff; border: 1px solid #d5dfe9; border-radius: 12px; padding: 1.4rem; }
+[data-baseweb="tab-list"] { gap: 0.5rem; margin-top: 0.8rem; margin-bottom: 1rem; }
+[data-baseweb="tab"] { font-size: 1rem; padding: 0.7rem 1rem; }
+[data-baseweb="tab"][aria-selected="true"] { font-weight: 650; }
+.workspace-intro { color: #3c5063; font-size: 1.08rem; line-height: 1.65; max-width: 760px; margin-bottom: 1rem; }
 @media (max-width: 640px) {
- .block-container { padding-top: 4.5rem; }
- .workflow { grid-template-columns: 1fr; gap: 0.5rem; }
- .workflow-item { padding: 0.8rem 1rem; }
+ .block-container { padding-top: 4.3rem; }
  [data-testid="stForm"] { padding: 1rem; }
+ [data-baseweb="tab"] { padding: 0.65rem 0.5rem; }
 }
 </style>
-<div class="workspace-kicker">LESS SEARCHING. MORE UNDERSTANDING.</div>
 """, unsafe_allow_html=True)
 st.title("Pagewise")
-st.markdown('<p class="workspace-intro">Your PDFs have a lot to say. Bring a manual, report, set of notes or research paper, and turn the pages into a conversation.</p>', unsafe_allow_html=True)
-st.markdown("""
-<div class="workflow" aria-label="How it works">
- <div class="workflow-item"><b>01 &nbsp; Bring a PDF</b><span>Add a text-based document and choose a category.</span></div>
- <div class="workflow-item"><b>02 &nbsp; Ask a question</b><span>Ask for an explanation, a detail or a summary.</span></div>
- <div class="workflow-item"><b>03 &nbsp; Check the sources</b><span>Check the answer against your original documents.</span></div>
-</div>
-""", unsafe_allow_html=True)
-with st.expander("Before you upload: formats and document privacy"):
-    st.write("Use text-based PDFs up to 10 MB by default. Scanned pages need OCR first. Uploading the same PDF again creates duplicate passages.")
-    st.write("Only upload documents you have permission to process. Document text and questions are sent to external model and translation providers. Everyone using this deployment shares the same document library.")
-    st.caption("Answers can be incomplete or incorrect. Retrieved document titles help you check the context; they are not verified citations for every sentence.")
+st.markdown('<p class="workspace-intro">Upload a PDF and ask questions about its contents. Get an answer with the titles of documents used as context.</p>', unsafe_allow_html=True)
 
-tab_upload, tab_ask = st.tabs(["Add a PDF", "Ask your documents"])
+tab_upload, tab_ask = st.tabs(["Upload a PDF", "Ask questions"])
 with tab_upload:
-    st.subheader("Give your next question a starting point")
-    st.write("Manuals, reports, study notes and research papers are welcome. Add a PDF, then ask questions in its category.")
-    with st.form("upload_form"):
-        file = st.file_uploader("PDF document", type=["pdf"], help="Choose a text-based PDF. Scanned documents need text recognition before upload.")
-        title = st.text_input("Document title", max_chars=250, placeholder="A name you will recognize in your sources")
-        col_domain, col_language = st.columns(2)
-        with col_domain:
-            domain = st.selectbox("Document category", DOMAINS, format_func=CATEGORY_LABELS.get, key="upload_domain", help="Use this same category when asking questions.")
-        with col_language:
-            language = st.selectbox("Document language", list(LANGUAGES), format_func=LANGUAGES.get)
-        with st.expander("Optional: research paper settings"):
-            exclude_references = st.checkbox("Skip reference sections", value=False, help="Stops at a detected References or Bibliography heading and ignores everything after it. Leave off to keep the full document.")
-        uploaded = st.form_submit_button("Make PDF searchable", type="primary", use_container_width=True)
-    if uploaded:
-        if not file or not title.strip():
-            st.warning("Choose a PDF and give your document a title.")
-        else:
-            with st.spinner("Making your document searchable..."):
-                body = post("ingest", files={"file": (file.name, file.getvalue(), "application/pdf")}, data={"paper_title": title.strip(), "domain": domain, "language": language, "exclude_references": str(exclude_references).lower()})
-            if body is not None:
-                if isinstance(body, dict) and isinstance(body.get("inserted_chunks"), int):
-                    st.session_state.last_indexed = {"title": title.strip(), "domain": domain}
-                    st.session_state.ask_domain = domain
-                    st.session_state.pop("answer", None)
-                else:
-                    st.error("The service returned an incomplete indexing result. Please check before uploading again.")
-    if "last_indexed" in st.session_state:
-        paper = st.session_state.last_indexed
-        st.success(f"Document ready: {paper['title']}. Next, open Ask your documents. The {CATEGORY_LABELS[paper['domain']]} category is already selected.")
-    else:
-        st.caption("Text-based PDFs up to 10 MB. Scanned pages need OCR before upload. No sample documents are preloaded.")
+    main, guide = st.columns([2.1, 1], gap="large")
+    with main:
+        st.subheader("Add your document")
+        with st.form("upload_form"):
+            file = st.file_uploader("PDF file", type=["pdf"], help="Text-based PDF, up to 10 MB. Scanned or image-only PDFs need text recognition first.")
+            st.caption("Text-based PDF only. Maximum file size: 10 MB.")
+            title = st.text_input("Document title", max_chars=250, placeholder="For example: Employee handbook", help="This title will appear when the document is used to answer a question.")
+            col_category, col_language = st.columns(2)
+            with col_category:
+                domain = st.selectbox("Document category", DOMAINS, format_func=CATEGORY_LABELS.get, key="upload_domain", help="Questions search all documents in the selected category. Use General documents unless a more specific category fits.")
+            with col_language:
+                language = st.selectbox("Document language", list(LANGUAGES), format_func=LANGUAGES.get)
+            with st.expander("Optional: skip reference sections"):
+                exclude_references = st.checkbox("Stop at References or Bibliography", value=False)
+                st.caption("Only text before the detected heading will be kept. Any appendices after it will also be skipped. Leave this off for most PDFs.")
+            uploaded = st.form_submit_button("Upload PDF", type="primary", use_container_width=True)
+        if uploaded:
+            if not file or not title.strip():
+                st.warning("Choose a PDF and enter a document title.")
+            else:
+                with st.spinner("Preparing your PDF for questions..."):
+                    body = post("ingest", files={"file": (file.name, file.getvalue(), "application/pdf")}, data={"paper_title": title.strip(), "domain": domain, "language": language, "exclude_references": str(exclude_references).lower()})
+                if body is not None:
+                    if isinstance(body, dict) and isinstance(body.get("inserted_chunks"), int):
+                        st.session_state.last_indexed = {"title": title.strip(), "domain": domain}
+                        st.session_state.ask_domain = domain
+                        st.session_state.pop("answer", None)
+                    else:
+                        st.error("The service did not confirm that the PDF was prepared. Check before uploading it again.")
+        if "last_indexed" in st.session_state:
+            document = st.session_state.last_indexed
+            st.success(f"Ready to use: {document['title']}. Open Ask questions to continue. Category: {CATEGORY_LABELS[document['domain']]}.")
+    with guide:
+        st.subheader("Before you upload")
+        with st.container(border=True):
+            st.markdown("**Supported documents**")
+            st.write("Manuals, reports, study notes, guides and research papers saved as text-based PDFs.")
+            st.markdown("**Scanned pages**")
+            st.write("If the text cannot be selected in a PDF reader, run text recognition (OCR) before uploading.")
+            st.markdown("**Avoid duplicate uploads**")
+            st.write("Uploading the same PDF again adds another copy of its text to the library.")
+        st.info("Shared library: other users can ask questions about uploaded content. Do not upload private or confidential documents.")
+        st.caption("Upload only documents you have permission to process. Document text and questions are sent to external AI and translation services.")
+
 with tab_ask:
-    st.subheader("What would you like to understand?")
-    st.write("Get to the detail you need: explain a concept, find a fact or summarize an idea. Search the category where your PDF was added.")
-    if "last_indexed" in st.session_state:
-        st.caption("Recently added in this session: " + st.session_state.last_indexed["title"])
-    else:
-        st.info("New here? Start with Add a PDF. If a document is already in the shared library, choose its category below.")
-    with st.form("ask_form"):
-        question = st.text_area("Your question", placeholder="What are the key steps described in this document?", height=130, max_chars=8000)
-        col_domain, col_language = st.columns(2)
-        with col_domain:
-            domain = st.selectbox("Document category", DOMAINS, format_func=CATEGORY_LABELS.get, key="ask_domain")
-        with col_language:
-            language = st.selectbox("Question language", ["en", "auto", "es", "fr", "it"], format_func=lambda x: "Detect automatically" if x == "auto" else LANGUAGES[x], help="Choose a language directly to avoid relying on automatic detection.")
-        submitted = st.form_submit_button("Find an answer", type="primary", use_container_width=True)
-    if submitted:
-        st.session_state.pop("answer", None)
-        if not question.strip():
-            st.warning("Enter a question to search your documents.")
+    main, guide = st.columns([2.1, 1], gap="large")
+    with main:
+        st.subheader("Ask about your documents")
+        if "last_indexed" in st.session_state:
+            st.caption("Last document added in this session: " + st.session_state.last_indexed["title"])
         else:
-            with st.spinner("Reading relevant passages..."):
-                body = post("ask", json={"question": question.strip(), "domain": domain, "source_language": None if language == "auto" else language})
-            if body is not None:
-                if isinstance(body, dict) and isinstance(body.get("answer"), str):
-                    st.session_state.answer = body
-                else:
-                    st.error("The service returned an incomplete answer. Please try again.")
+            st.caption("Upload a PDF first, or choose a category that already contains documents in the shared library.")
+        with st.form("ask_form"):
+            question = st.text_area("Your question", placeholder="What are the main steps described in this document?", height=140, max_chars=8000)
+            col_category, col_language = st.columns(2)
+            with col_category:
+                domain = st.selectbox("Search category", DOMAINS, format_func=CATEGORY_LABELS.get, key="ask_domain", help="Choose the category used when the PDF was uploaded. Answers may use multiple documents in that category.")
+            with col_language:
+                language = st.selectbox("Question language", ["en", "auto", "es", "fr", "it"], format_func=lambda x: "Detect automatically" if x == "auto" else LANGUAGES[x], help="Select the language of your question. The answer will use the same language.")
+            submitted = st.form_submit_button("Get answer", type="primary", use_container_width=True)
+        if submitted:
+            st.session_state.pop("answer", None)
+            if not question.strip():
+                st.warning("Enter a question about your documents.")
+            else:
+                with st.spinner("Finding relevant text and preparing your answer..."):
+                    body = post("ask", json={"question": question.strip(), "domain": domain, "source_language": None if language == "auto" else language})
+                if body is not None:
+                    if isinstance(body, dict) and isinstance(body.get("answer"), str):
+                        st.session_state.answer = body
+                    else:
+                        st.error("The service returned an incomplete answer. Please try again.")
+    with guide:
+        st.subheader("Get a useful answer")
+        with st.container(border=True):
+            st.markdown("**Choose the right category**")
+            st.write("Pagewise searches all documents in that category, not just the last PDF you uploaded.")
+            st.markdown("**Ask a specific question**")
+            st.write("Name the topic, process or rule you want explained. Include relevant details in your question.")
+            st.markdown("**Check the original PDF**")
+            st.write("Source titles identify documents used as context. They are not page citations or proof that every sentence is correct.")
     if "answer" in st.session_state:
         body = st.session_state.answer
         st.divider()
         st.subheader("Answer")
-        st.write(body["answer"])
+        with st.container(border=True):
+            st.write(body["answer"])
         refs = body.get("references", [])
         if refs:
             st.subheader("Source documents")
-            st.caption("These documents supplied the retrieved passages. Check the originals for context; titles do not verify every sentence.")
+            st.caption("Documents retrieved as context for this answer. Review the originals to verify important details.")
             for title in refs:
                 with st.container(border=True):
                     st.text(title)
         else:
-            st.info("No source documents to display. Add a PDF in the selected category, then ask again.")
+            st.info("No source documents to display. Check the category or upload a PDF before asking again.")
     else:
-        st.caption("Your answer and source document titles will appear here after you ask a question.")
+        st.caption("Your answer and source document titles will appear below after you submit a question.")
 st.divider()
-st.caption("A clearer way through your documents. English, Spanish, French and Italian. Always check important conclusions against the original document.")
+st.caption("AI-generated answers can be incomplete or incorrect. Verify important information in the original documents.")
