@@ -2,7 +2,7 @@
 
 **Understand your PDFs, one question at a time.**
 
-**[Open Pagewise](https://between-papers.onrender.com)** ? hosted on Render free services.
+**[Open Pagewise](https://pagewise-3pqx.onrender.com)** ? hosted on Render free services.
 The first request after inactivity can take longer while services wake up.
 
 [![Python checks](https://github.com/ManeswarSahu11/between-papers/actions/workflows/checks.yml/badge.svg)](https://github.com/ManeswarSahu11/between-papers/actions/workflows/checks.yml)

@@ -34,7 +34,7 @@ services:
     envVars:
       - fromGroup: between-papers-service-access
   - type: web
-    name: between-papers
+    name: pagewise
     runtime: docker
     plan: free
     dockerContext: ./frontend

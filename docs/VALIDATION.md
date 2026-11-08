@@ -135,3 +135,16 @@ checks for upload-first navigation, question validation, browser title and page
 overflow. The frontend health endpoint returned HTTP 200. Public upload and
 question screenshots were refreshed. This frontend-only release does not
 revalidate external provider availability or full accessibility conformance.
+
+## Pagewise Render address
+
+The public frontend is moving to https://pagewise-3pqx.onrender.com. Renaming
+the old Render service changed its display name but not its hostname, so a
+replacement free frontend was created with the same private environment values.
+Render assigned the suffix `3pqx`; the exact hostname `pagewise.onrender.com`
+was not assigned. The backend services and stored documents are unchanged.
+
+The replacement frontend at https://pagewise-3pqx.onrender.com passed public
+phone/tablet/desktop checks. A visual refresh uses a larger file drop zone,
+purple theme and selected navigation pills while retaining the existing forms.
+The full regression suite remains 33 passing tests.

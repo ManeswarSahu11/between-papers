@@ -10,7 +10,7 @@ runs interface update `d060d7f45bbbb50e08ec0a2b2c5b54c996804e48`. The unchanged 
 
 | Component | Public endpoint |
 | --- | --- |
-| Workspace | https://between-papers.onrender.com |
+| Workspace | https://pagewise-3pqx.onrender.com |
 | Agent health | https://between-papers-api.onrender.com/healthz |
 | Translator health | https://between-papers-translator.onrender.com/healthz |
 
@@ -131,6 +131,6 @@ has not been independently tested.
 
 ## App name
 
-The app is now branded Pagewise. Existing `between-papers` repository and Render
-service identifiers are retained so existing URLs and service connections keep
-working. The brand update does not rename collections or move stored documents.
+The app is now branded Pagewise. The GitHub repository remains `between-papers`; the public frontend service is
+now named `pagewise`. Render assigned `pagewise-3pqx.onrender.com` to the
+replacement free frontend. Agent and translator service identifiers are unchanged. The brand update does not rename collections or move stored documents.

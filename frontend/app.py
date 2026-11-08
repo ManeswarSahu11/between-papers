@@ -50,9 +50,25 @@ h1 { font-size: clamp(2.3rem, 5vw, 3rem) !important; font-weight: 650 !important
 [data-baseweb="tab"] { font-size: 1rem; padding: 0.7rem 1rem; }
 [data-baseweb="tab"][aria-selected="true"] { font-weight: 650; }
 .workspace-intro { color: #3c5063; font-size: 1.08rem; line-height: 1.65; max-width: 760px; margin-bottom: 1rem; }
+
+[data-testid="stToolbar"] { display: none; }
+h1 { display: flex; align-items: center; gap: 0.7rem; }
+h1::before { content: ""; display: inline-block; flex-shrink: 0; width: 42px; height: 44px; border-radius: 12px; background: #6552d8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M3 4c3-1 6 0 9 2 3-2 6-3 9-2v15c-3-1-6 0-9 2-3-2-6-3-9-2zM12 6v15'/%3E%3C/svg%3E") center / 26px no-repeat; box-shadow: 0 5px 16px #6552d82a; }
+[data-testid="stForm"] { border-color: #e4e0f1; border-radius: 18px; padding: 1.6rem; box-shadow: 0 8px 30px #34305a06; }
+[data-testid="stFileUploaderDropzone"] { min-height: 185px; border: 1.5px dashed #b7a8e7; border-radius: 12px; background: linear-gradient(135deg, #f1edff, #faf8ff); display: flex; align-items: center; padding: 1.5rem; }
+[data-testid="stFileUploaderDropzone"] button { color: #fff; background: #6552d8; border-color: #6552d8; border-radius: 8px; font-weight: 600; }
+[data-baseweb="tab-list"] { background: #fff; padding: 6px; border: 1px solid #e4e0f1; border-radius: 12px; width: fit-content; gap: 5px; }
+[data-baseweb="tab"] { border-radius: 8px; padding: 0.65rem 1.1rem; }
+[data-baseweb="tab"][aria-selected="true"] { background: #eeebfc; color: #5543b9; }
+[data-baseweb="tab-highlight"], [data-baseweb="tab-border"] { display: none; }
+[data-testid="stBaseButton-primary"] { background: #6552d8; border-color: #6552d8; border-radius: 9px; min-height: 45px; }
+[data-testid="stBaseButton-primary"]:hover { background: #5140b5; border-color: #5140b5; }
+[data-testid="stForm"] input, [data-testid="stForm"] textarea { background: #faf9fd; }
+
 @media (max-width: 640px) {
  .block-container { padding-top: 4.3rem; }
  [data-testid="stForm"] { padding: 1rem; }
+ [data-testid="stFileUploaderDropzone"] { min-height: 170px; padding: 1rem; }
  [data-baseweb="tab"] { padding: 0.65rem 0.5rem; }
 }
 </style>
