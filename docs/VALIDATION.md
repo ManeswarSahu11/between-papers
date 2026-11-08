@@ -170,3 +170,23 @@ Browser fixture checks passed at 390x844, 768x1024 and 1440x1500: upload, starte
 selection, keyboard submission, actual answer download, saved-answer restore and
 history clearing. The downloaded file retained the original question after an
 unsubmitted draft edit, and included the response and source title.
+
+The clarity update `d060d7f` passed GitHub CI and public phone/tablet/desktop
+checks for upload-first navigation, question validation, browser title and page
+overflow. The frontend health endpoint returned HTTP 200. Public upload and
+question screenshots were refreshed. This frontend-only release does not
+revalidate external provider availability or full accessibility conformance.
+
+Session tools release `723f5d0` passed GitHub CI (40 tests). Public browser
+verification used one generated PDF and a real Gemini answer: a starter filled
+the question, the Markdown download retained the submitted question after a
+draft edit and contained the correct seven-readings answer and source title,
+saved-answer restore repopulated the question, and clear removed the history and
+displayed answer. The generated document was deleted and absence confirmed.
+
+Initial backend readiness/liveness requests timed out. The service was not
+suspended; logs showed shutdown. A restart request did not restore responses,
+so the existing verified backend commit was redeployed on the same free plan.
+Fresh liveness/readiness requests and the complete public workflow then passed.
+This recovery does not establish always-on reliability or resolve cold-start
+limits. No backend source, provider configuration or existing documents changed.
