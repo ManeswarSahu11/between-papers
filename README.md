@@ -38,6 +38,9 @@ The phone and tablet images below use deterministic fixtures.
 | Ask questions | Category-filtered vector retrieval and Gemini generation | Requires configured providers; answers need checking |
 | Work across languages | English, Spanish, French, Italian | Translation can fail; retrieval quality is unbenchmarked |
 | Review sources | Show titles of retrieved documents | No page citations or verified claim-level attribution |
+| Start a question | Localized question starters you can edit before submitting | Templates, not generated recommendations |
+| Revisit answers | Reopen the last ten successful questions without another model call | Temporary browser session; no account history |
+| Save an answer | Download Markdown with question, answer, category and retrieved titles | Export is not a verified citation report |
 | Handle failures | Input validation, loading messages, useful errors | No offline answer fallback |
 
 No documents are bundled or automatically indexed. The library is shared across

@@ -6,7 +6,7 @@ Checked 8 November 2026 on Windows with Python 3.12.4.
 | --- | --- | --- |
 | Initial source compilation | Passed | All three Python services |
 | Initial test discovery | No tests existed | Baseline had no regression suite |
-| Regression suite | 33 passed | Agent API, translator logic, Streamlit forms |
+| Regression suite | 40 passed | Agent API, translator logic, Streamlit forms |
 | Dependency consistency | Passed | Isolated agent/frontend environment |
 | Browser interactions | Passed | Chromium at 390?844, 768?1024, 1440?1500 |
 | Mermaid rendering | 5 passed | Actual rendering using Mermaid 11.12.2 |
@@ -160,3 +160,13 @@ phone/tablet/desktop checks confirmed the purple brand mark, upload-first
 navigation, question validation and no page-width overflow. Frontend health
 returned HTTP 200 and GitHub CI passed. The old frontend is retained as a
 rollback option; the new frontend uses the same backend and private settings.
+
+## Session tools release
+
+Added localized question starters, ten-entry session history with restore/clear,
+and Markdown answer export. Regressions cover provider-free starters, language
+selection, history bounds, saved context, failure handling and session isolation.
+Browser fixture checks passed at 390x844, 768x1024 and 1440x1500: upload, starter
+selection, keyboard submission, actual answer download, saved-answer restore and
+history clearing. The downloaded file retained the original question after an
+unsubmitted draft edit, and included the response and source title.

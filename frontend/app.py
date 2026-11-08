@@ -38,6 +38,50 @@ def post(path, **kwargs):
     return None
 
 
+QUESTION_STARTERS = {
+    "en": ["Explain the main idea described in the documents.", "What are the main steps described in the documents?", "What conditions or exceptions are mentioned in the documents?"],
+    "es": ["Explica la idea principal descrita en los documentos.", "\u00bfCu\u00e1les son los pasos principales descritos en los documentos?", "\u00bfQu\u00e9 condiciones o excepciones se mencionan en los documentos?"],
+    "fr": ["Expliquez l'id\u00e9e principale pr\u00e9sent\u00e9e dans les documents.", "Quelles sont les principales \u00e9tapes d\u00e9crites dans les documents ?", "Quelles conditions ou exceptions sont mentionn\u00e9es dans les documents ?"],
+    "it": ["Spiega l'idea principale descritta nei documenti.", "Quali sono i passaggi principali descritti nei documenti?", "Quali condizioni o eccezioni sono menzionate nei documenti?"],
+}
+
+
+def use_starter(index):
+    language = st.session_state.get("question_language", "en")
+    st.session_state.question_input = QUESTION_STARTERS.get(language, QUESTION_STARTERS["en"])[index]
+
+
+def show_saved_answer():
+    entry = st.session_state.question_history[st.session_state.history_choice]
+    st.session_state.answer = entry["response"]
+    st.session_state.answer_context = entry
+    st.session_state.question_input = entry["question"]
+    st.session_state.ask_domain = entry["domain"]
+    st.session_state.question_language = entry["source_language"]
+
+
+def clear_question_history():
+    for key in ("question_history", "history_choice", "answer", "answer_context"):
+        st.session_state.pop(key, None)
+    st.session_state.question_input = ""
+
+
+def answer_markdown(entry):
+    response = entry["response"]
+    titles = response.get("references", [])
+    sources = "\n".join("- " + " ".join(title.splitlines()) for title in titles) or "No source documents were retrieved."
+    language = LANGUAGES.get(response.get("language"), "Not recorded")
+    return (
+        "# Pagewise answer\n\n## Question\n" + entry["question"]
+        + "\n\nCategory: " + CATEGORY_LABELS[entry["domain"]]
+        + "\nAnswer language: " + language
+        + "\n\n## Answer\n" + response["answer"]
+        + "\n\n## Retrieved document titles\n" + sources
+        + "\n\nAI-generated answer. Verify important information in the original documents. "
+          "Document titles are not page-level or claim-level citations.\n"
+    )
+
+
 st.set_page_config(page_title="Pagewise", page_icon=":books:", layout="wide")
 st.markdown("""
 <style>
@@ -105,6 +149,7 @@ with tab_upload:
                         st.session_state.last_indexed = {"title": title.strip(), "domain": domain}
                         st.session_state.ask_domain = domain
                         st.session_state.pop("answer", None)
+                        st.session_state.pop("answer_context", None)
                     else:
                         st.error("The service did not confirm that the PDF was prepared. Check before uploading it again.")
         if "last_indexed" in st.session_state:
@@ -130,13 +175,15 @@ with tab_ask:
             st.caption("Last document added in this session: " + st.session_state.last_indexed["title"])
         else:
             st.caption("Upload a PDF first, or choose a category that already contains documents in the shared library.")
+        with st.expander("Question language & starters"):
+            language = st.selectbox("Question language", ["en", "auto", "es", "fr", "it"], format_func=lambda x: "Detect automatically" if x == "auto" else LANGUAGES[x], help="Select the language of your question. The answer will use the same language.", key="question_language")
+            st.caption("Choose a starter, then edit it before submitting. It uses your selected question language; automatic detection starts in English.")
+            for index, (column, label) in enumerate(zip(st.columns(3), ["Explain the main idea", "List the main steps", "Find conditions"])):
+                with column:
+                    st.button(label, on_click=use_starter, args=(index,), use_container_width=True)
         with st.form("ask_form"):
-            question = st.text_area("Your question", placeholder="What are the main steps described in this document?", height=140, max_chars=8000)
-            col_category, col_language = st.columns(2)
-            with col_category:
-                domain = st.selectbox("Search category", DOMAINS, format_func=CATEGORY_LABELS.get, key="ask_domain", help="Choose the category used when the PDF was uploaded. Answers may use multiple documents in that category.")
-            with col_language:
-                language = st.selectbox("Question language", ["en", "auto", "es", "fr", "it"], format_func=lambda x: "Detect automatically" if x == "auto" else LANGUAGES[x], help="Select the language of your question. The answer will use the same language.")
+            question = st.text_area("Your question", placeholder="What are the main steps described in this document?", height=140, max_chars=8000, key="question_input")
+            domain = st.selectbox("Search category", DOMAINS, format_func=CATEGORY_LABELS.get, key="ask_domain", help="Choose the category used when the PDF was uploaded. Answers may use multiple documents in that category.")
             submitted = st.form_submit_button("Get answer", type="primary", use_container_width=True)
         if submitted:
             st.session_state.pop("answer", None)
@@ -147,7 +194,10 @@ with tab_ask:
                     body = post("ask", json={"question": question.strip(), "domain": domain, "source_language": None if language == "auto" else language})
                 if body is not None:
                     if isinstance(body, dict) and isinstance(body.get("answer"), str):
+                        entry = {"question": question.strip(), "domain": domain, "source_language": language, "response": body}
                         st.session_state.answer = body
+                        st.session_state.answer_context = entry
+                        st.session_state.question_history = [entry] + st.session_state.get("question_history", [])[:9]
                     else:
                         st.error("The service returned an incomplete answer. Please try again.")
     with guide:
@@ -163,6 +213,10 @@ with tab_ask:
         body = st.session_state.answer
         st.divider()
         st.subheader("Answer")
+        context = st.session_state.get("answer_context")
+        if context:
+            st.caption("Question: " + context["question"] + " | Category: " + CATEGORY_LABELS[context["domain"]])
+            st.download_button("Download answer", data=answer_markdown(context), file_name="pagewise-answer.md", mime="text/markdown", help="Save this question, answer and retrieved document titles as a Markdown file.")
         with st.container(border=True):
             st.write(body["answer"])
         refs = body.get("references", [])
@@ -176,5 +230,16 @@ with tab_ask:
             st.info("No source documents to display. Check the category or upload a PDF before asking again.")
     else:
         st.caption("Your answer and source document titles will appear below after you submit a question.")
+    history = st.session_state.get("question_history", [])
+    if history:
+        with st.expander("Recent questions in this session"):
+            st.caption("Your last 10 successful questions, newest first. Reopening an answer does not call the model again. History is temporary and is not shared with other users.")
+            st.selectbox("Choose a previous question", list(range(len(history))), format_func=lambda index: history[index]["question"][:100] + " | " + CATEGORY_LABELS[history[index]["domain"]], key="history_choice")
+            reopen, clear = st.columns(2)
+            with reopen:
+                st.button("Show saved answer", on_click=show_saved_answer, use_container_width=True)
+            with clear:
+                st.button("Clear session history", on_click=clear_question_history, use_container_width=True)
+            st.caption("Clearing removes this session's questions and displayed answer. Uploaded documents remain in the shared library.")
 st.divider()
 st.caption("AI-generated answers can be incomplete or incorrect. Verify important information in the original documents.")

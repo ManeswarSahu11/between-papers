@@ -84,3 +84,15 @@ All users share one collection. There are no accounts, ownership filters,
 delete endpoints, OCR, automatic deduplication, or web search. Repeated uploads
 create more chunks. Prompt instructions request context-grounded answers but do
 not guarantee factuality or defend against all instructions embedded in papers.
+
+## Session conveniences
+
+Question starters are predefined templates and make no provider call. Successful
+responses are stored with the submitted question, category and language in
+Streamlit session state (maximum ten). Reopening an entry reads that response
+without rerunning retrieval or generation. It is not conversation memory for
+the model, an account history or a private document library.
+
+Markdown downloads use the saved request context, so editing an unsubmitted
+question does not relabel an old answer. Clearing session history also clears
+the displayed answer and question; it does not delete indexed documents.
