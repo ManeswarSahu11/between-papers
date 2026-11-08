@@ -6,7 +6,7 @@ Checked 8 November 2026 on Windows with Python 3.12.4.
 | --- | --- | --- |
 | Initial source compilation | Passed | All three Python services |
 | Initial test discovery | No tests existed | Baseline had no regression suite |
-| Regression suite | 28 passed | Agent API, translator logic, Streamlit forms |
+| Regression suite | 29 passed | Agent API, translator logic, Streamlit forms |
 | Dependency consistency | Passed | Isolated agent/frontend environment |
 | Browser interactions | Passed | Chromium at 390?844, 768?1024, 1440?1500 |
 | Mermaid rendering | 5 passed | Actual rendering using Mermaid 11.12.2 |
@@ -78,3 +78,11 @@ it downloads a pinned Mermaid runtime and requires network access.
   README examples are preserved and excluded from first-party link checks.
 - No security audit, load benchmark, tenant isolation, OCR, deduplication or
   claim-level citation verification is supplied.
+
+## Upload-first interface update
+
+The Add a paper tab now opens first. The workspace explains the three-step flow,
+uses responsive form columns and clearer text contrast, and carries the uploaded
+paper's domain into the question form. Regression coverage checks tab order and
+required upload fields. Browser checks passed at phone, tablet and desktop sizes,
+including a Security-domain upload followed by a question in that selected domain.
