@@ -106,3 +106,15 @@ titled test document was removed. Current live screenshots show this release.
 The browser test waits for the file-transfer response before submitting the form.
 Free-service wake-up checks still experienced timeouts; an always-responsive
 service is not claimed. The generic workspace remains limited to text PDFs.
+
+## Pagewise branding
+
+Renamed the application to Pagewise in release `2873bfd`, including the browser
+title, visible heading, API title, README and first-party service documentation.
+All 33 regression tests passed locally and in GitHub CI. The fixture-based
+phone/tablet/desktop workflow checks also passed. Public branding checks cover
+the heading, browser title, upload-first navigation, question validation and
+layout. Pagewise upload/question screenshots are current public captures; older
+live-answer images are retained as historical verification artifacts. Existing
+repository URLs, Render service identifiers and vector collection names remain
+unchanged.

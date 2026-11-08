@@ -21,11 +21,12 @@ then ask in one of four languages and review the source document titles.
 
 ## Workspace preview
 
-![Pagewise PDF upload workspace](docs/images/live-upload.png)
+![Pagewise PDF upload workspace](docs/images/pagewise-upload.png)
 
 Real public deployment capture of the upload-first workspace.
-[Live answer view](docs/images/live-desktop.png) uses a generated verification
-document with real Gemini and Zilliz; that test document was removed afterward.
+[Question workspace](docs/images/pagewise-questions.png) shows the Pagewise
+question form. Historical live answer verification used a generated document
+with real Gemini and Zilliz; that test document was removed afterward.
 The phone and tablet images below use deterministic fixtures.
 [Phone view](docs/images/phone.png) ? [Tablet view](docs/images/tablet.png)
 
