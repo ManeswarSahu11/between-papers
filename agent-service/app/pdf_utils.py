@@ -10,10 +10,9 @@ REFERENCE_HEADING_PATTERN = re.compile(
 )
 
 
-def extract_text_without_references(pdf_bytes: bytes) -> str:
+def extract_pdf_text(pdf_bytes: bytes, exclude_references: bool = False) -> str:
     """
-    Extract text page by page and stop once a references heading is found.
-    This avoids indexing bibliography entries that can pollute retrieval quality.
+    Extract text from all pages, optionally stopping at a bibliography heading.
     """
     reader = PdfReader(BytesIO(pdf_bytes))
     chunks: list[str] = []
@@ -24,7 +23,7 @@ def extract_text_without_references(pdf_bytes: bytes) -> str:
 
         cutoff_index = None
         for i, line in enumerate(lines):
-            if REFERENCE_HEADING_PATTERN.match(line.strip()):
+            if exclude_references and REFERENCE_HEADING_PATTERN.match(line.strip()):
                 cutoff_index = i
                 break
 
@@ -37,3 +36,8 @@ def extract_text_without_references(pdf_bytes: bytes) -> str:
         chunks.append(page_text)
 
     return "\n".join(chunks).strip()
+
+
+def extract_text_without_references(pdf_bytes: bytes) -> str:
+    """Keep the original reference-excluding helper for existing callers."""
+    return extract_pdf_text(pdf_bytes, exclude_references=True)

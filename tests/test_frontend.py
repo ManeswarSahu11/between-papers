@@ -31,7 +31,7 @@ def test_answer_persists_and_empty_sources():
         next(button for button in app.button if button.label == 'Find an answer').click().run()
         app.run()
     assert not app.exception
-    assert any('No source papers' in entry.value for entry in app.info)
+    assert any('No source documents' in entry.value for entry in app.info)
 
 
 def test_denied_permission():
@@ -45,7 +45,13 @@ def test_denied_permission():
 
 def test_upload_is_first_and_empty_upload_has_guidance():
     app = AppTest.from_file(APP).run()
-    assert [tab.label for tab in app.tabs] == ['Add a paper', 'Ask your papers']
-    next(button for button in app.button if button.label == 'Index paper').click().run()
+    assert [tab.label for tab in app.tabs] == ['Add a PDF', 'Ask your documents']
+    next(button for button in app.button if button.label == 'Make PDF searchable').click().run()
     assert not app.exception
     assert 'Choose a PDF' in app.warning[0].value
+
+
+def test_general_category_and_full_document_are_defaults():
+    app = AppTest.from_file(APP).run()
+    assert app.selectbox[0].value == 'Other'
+    assert app.checkbox[0].value is False

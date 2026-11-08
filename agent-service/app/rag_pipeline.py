@@ -41,7 +41,7 @@ def build_generation_graph(llm: ChatGoogleGenerativeAI):
     def generate_node(state: AgentState) -> AgentState:
         context = "\n\n".join(state.get("retrieved_chunks", []))
         prompt = (
-            "You are a research assistant. Use only retrieved context.\n"
+            "You are a document reading assistant. Use only retrieved context.\n"
             "If context is insufficient, clearly say so.\n"
             "Provide a concise factual answer.\n\n"
             f"Context:\n{context}\n\n"

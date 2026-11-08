@@ -11,9 +11,9 @@ The first request after inactivity can take longer while services wake up.
 ![Interface Streamlit](https://img.shields.io/badge/Interface-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
 ![API FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)
 
-A focused workspace for uploading research papers and asking questions about
-their contents. Choose a research domain, ask in one of four languages, and
-review the paper titles that supplied retrieved context.
+A focused workspace for asking questions of your PDFs: manuals, reports, study
+notes, guides and research papers. Add a text-based document, choose a category,
+then ask in one of four languages and review the source document titles.
 
 [Quick start](docs/SETUP.md) · [Architecture](docs/ARCHITECTURE.md) ·
 [Deployment](docs/DEPLOYMENT.md) · [Validation](docs/VALIDATION.md) ·
@@ -21,24 +21,25 @@ review the paper titles that supplied retrieved context.
 
 ## Workspace preview
 
-![Between Papers live desktop workspace](docs/images/live-desktop.png)
+![Between Papers PDF upload workspace](docs/images/live-upload.png)
 
-Real public deployment capture using a generated verification paper, live Gemini
-and Zilliz retrieval. The sample paper was removed after the check; it is not
-preloaded content. The phone and tablet images below use deterministic fixtures.
+Real public deployment capture of the upload-first workspace.
+[Live answer view](docs/images/live-desktop.png) uses a generated verification
+document with real Gemini and Zilliz; that test document was removed afterward.
+The phone and tablet images below use deterministic fixtures.
 [Phone view](docs/images/phone.png) ? [Tablet view](docs/images/tablet.png)
 
 ## What you can do
 
 | Capability | Implemented behavior | Limits |
 | --- | --- | --- |
-| Add papers | Extract text, split passages, embed and store in Milvus | Text PDFs; no OCR or deduplication |
-| Ask questions | Domain-filtered vector retrieval and Gemini generation | Requires configured providers; answers need checking |
+| Add PDFs | Extract text, split passages, embed and store in Milvus | Text PDFs; no OCR or deduplication |
+| Ask questions | Category-filtered vector retrieval and Gemini generation | Requires configured providers; answers need checking |
 | Work across languages | English, Spanish, French, Italian | Translation can fail; retrieval quality is unbenchmarked |
-| Review sources | Show titles of retrieved papers | No page citations or verified claim-level attribution |
+| Review sources | Show titles of retrieved documents | No page citations or verified claim-level attribution |
 | Handle failures | Input validation, loading messages, useful errors | No offline answer fallback |
 
-No papers are bundled or automatically indexed. The library is shared across
+No documents are bundled or automatically indexed. The library is shared across
 users of one deployment; it is not a private document vault. There is no account
 system, web search, or autonomous literature review.
 
@@ -54,8 +55,10 @@ flowchart LR
     T --> GT[External Google Translate]
 ```
 
-The agent validates PDFs, excludes text after detected bibliography headings,
-and retrieves passages from the selected AI, Security or Other domain. LangGraph
+The agent validates PDFs and retrieves passages from the selected category.
+The interface starts with General documents; AI & technology and Security are
+also available. Full document text is retained by default. Research readers can
+optionally skip everything from a detected References or Bibliography heading. LangGraph
 runs generation on those passages. The prompt asks for evidence-grounded answers;
 it does not guarantee correctness. [Detailed flows and boundaries](docs/ARCHITECTURE.md).
 

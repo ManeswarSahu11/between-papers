@@ -114,7 +114,7 @@ def test_blank_pdf(client):
 
 
 def test_ingestion(client, services, monkeypatch):
-    monkeypatch.setattr(main, 'extract_text_without_references', lambda _: 'Fixture text')
+    monkeypatch.setattr(main, 'extract_pdf_text', lambda *a, **kw: 'Fixture text')
     insert = Mock(return_value=1)
     monkeypatch.setattr(main, 'insert_chunks', insert)
     result = client.post('/ingest', data={'paper_title': ' Paper ', 'domain': 'AI', 'language': 'en'}, files={'file': ('paper.pdf', b'%PDF-fixture')})
@@ -154,3 +154,22 @@ def test_api_token_denied_and_allowed(client, monkeypatch):
     assert client.get('/readyz').status_code == 401
     result = client.get('/readyz', headers={'X-API-Key': 'fixture-access-token'})
     assert result.status_code == 503  # Authorized but no research provider configured.
+
+
+def test_general_pdf_keeps_text_after_references(monkeypatch):
+    from app import pdf_utils
+    page = Mock()
+    page.extract_text.return_value = 'Guide\nReferences\nImportant appendix'
+    monkeypatch.setattr(pdf_utils, 'PdfReader', lambda _: Mock(pages=[page]))
+    assert pdf_utils.extract_pdf_text(b'fixture') == 'Guide\nReferences\nImportant appendix'
+    assert pdf_utils.extract_pdf_text(b'fixture', exclude_references=True) == 'Guide'
+
+
+@pytest.mark.parametrize('exclude', ['true', 'false'])
+def test_ingest_forwards_reference_option(client, services, monkeypatch, exclude):
+    extract = Mock(return_value='Manual text')
+    monkeypatch.setattr(main, 'extract_pdf_text', extract)
+    monkeypatch.setattr(main, 'insert_chunks', Mock(return_value=1))
+    result = client.post('/ingest', data={'paper_title': 'Manual', 'domain': 'Other', 'language': 'en', 'exclude_references': exclude}, files={'file': ('manual.pdf', b'%PDF-fixture')})
+    assert result.status_code == 200
+    extract.assert_called_once_with(b'%PDF-fixture', exclude_references=(exclude == 'true'))

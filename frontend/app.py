@@ -5,7 +5,8 @@ import streamlit as st
 
 AGENT_BASE_URL = os.getenv("AGENT_BASE_URL", "http://localhost:8080").rstrip("/")
 LANGUAGES = {"en": "English", "es": "Spanish", "fr": "French", "it": "Italian"}
-DOMAINS = ["AI", "Security", "Other"]
+DOMAINS = ["Other", "AI", "Security"]
+CATEGORY_LABELS = {"Other": "General documents", "AI": "AI & technology", "Security": "Security"}
 
 
 def post(path, **kwargs):
@@ -16,19 +17,22 @@ def post(path, **kwargs):
                 400: "Check your input. Use a text-based, unencrypted PDF and a supported language.",
                 401: "Access was denied. Contact the maintainer.",
                 403: "You do not have permission to use this service.",
-                413: "This PDF exceeds the upload limit. Try a smaller paper.",
+                413: "This PDF exceeds the upload limit. Try a smaller document.",
                 422: "Check the required fields and try again.",
                 429: "The service is busy. Wait a moment before trying again.",
-                502: "A research provider is unavailable. Please try again shortly.",
-                503: "The research service is not ready. Please try again later.",
+                502: "A document service is unavailable. Please try again shortly.",
+                503: "The document service is not ready. Please try again later.",
             }
             st.error(messages.get(response.status_code, "The request failed. Please try again later."))
             return None
         return response.json()
     except requests.Timeout:
-        st.error("The request took too long. Indexing may still have completed; avoid uploading the same paper again immediately.")
+        if path == "ingest":
+            st.error("The upload took too long. The service may be waking up, and indexing may still complete. Avoid uploading the same PDF again immediately.")
+        else:
+            st.error("The answer took too long. The service may be waking up; please try again shortly.")
     except requests.RequestException:
-        st.error("Cannot reach the research service. Check your connection and try again.")
+        st.error("Cannot reach the document service. Check your connection and try again.")
     except ValueError:
         st.error("The service returned an unreadable response. Please try again later.")
     return None
@@ -40,7 +44,7 @@ st.markdown("""
 .block-container { max-width: 1120px; padding-top: 5rem; padding-bottom: 3rem; }
 h1, h2, h3 { letter-spacing: -0.035em; }
 h1 { font-family: Georgia, serif !important; font-weight: 500 !important; font-size: clamp(2.5rem, 6vw, 4rem) !important; }
-[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p { color: #4b5b55 !important; }
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p { color: #4b5b55 !important; opacity: 1 !important; }
 [data-testid="stForm"] { border-radius: 16px; background: #ffffff; padding: 1.4rem; }
 [data-baseweb="tab-list"] { gap: 1.25rem; margin-bottom: 1rem; }
 [data-baseweb="tab"] { font-size: 1rem; padding-bottom: 0.8rem; }
@@ -57,41 +61,43 @@ h1 { font-family: Georgia, serif !important; font-weight: 500 !important; font-s
  [data-testid="stForm"] { padding: 1rem; }
 }
 </style>
-<div class="workspace-kicker">A LITTLE CLARITY FOR YOUR READING LIST</div>
+<div class="workspace-kicker">LESS SEARCHING. MORE UNDERSTANDING.</div>
 """, unsafe_allow_html=True)
 st.title("Between Papers")
-st.markdown('<p class="workspace-intro">Turn a dense paper into a conversation. Add your research, ask a focused question, and follow the answer back to its sources.</p>', unsafe_allow_html=True)
+st.markdown('<p class="workspace-intro">Your PDFs have a lot to say. Bring a manual, report, set of notes or research paper, and turn the pages into a conversation.</p>', unsafe_allow_html=True)
 st.markdown("""
 <div class="workflow" aria-label="How it works">
- <div class="workflow-item"><b>01 &nbsp; Bring a paper</b><span>Upload a PDF and choose its research domain.</span></div>
- <div class="workflow-item"><b>02 &nbsp; Ask a question</b><span>Explore methods, findings and assumptions.</span></div>
- <div class="workflow-item"><b>03 &nbsp; Check the sources</b><span>Review the answer alongside the original papers.</span></div>
+ <div class="workflow-item"><b>01 &nbsp; Bring a PDF</b><span>Add a text-based document and choose a category.</span></div>
+ <div class="workflow-item"><b>02 &nbsp; Ask a question</b><span>Ask for an explanation, a detail or a summary.</span></div>
+ <div class="workflow-item"><b>03 &nbsp; Check the sources</b><span>Check the answer against your original documents.</span></div>
 </div>
 """, unsafe_allow_html=True)
 with st.expander("Before you upload: formats and document privacy"):
-    st.write("Use text-based PDFs up to 10 MB by default. Scanned pages need OCR first. Uploading the same paper again creates duplicate passages.")
-    st.write("Only upload documents you have permission to process. Paper text and questions are sent to external model and translation providers. Everyone using this deployment shares the same paper library.")
-    st.caption("Answers can be incomplete or incorrect. Retrieved paper titles help you check the context; they are not verified citations for every sentence.")
+    st.write("Use text-based PDFs up to 10 MB by default. Scanned pages need OCR first. Uploading the same PDF again creates duplicate passages.")
+    st.write("Only upload documents you have permission to process. Document text and questions are sent to external model and translation providers. Everyone using this deployment shares the same document library.")
+    st.caption("Answers can be incomplete or incorrect. Retrieved document titles help you check the context; they are not verified citations for every sentence.")
 
-tab_upload, tab_ask = st.tabs(["Add a paper", "Ask your papers"])
+tab_upload, tab_ask = st.tabs(["Add a PDF", "Ask your documents"])
 with tab_upload:
-    st.subheader("Start with something worth reading")
-    st.write("Add a paper to the shared library. Once it is indexed, you can ask questions in the same research domain.")
+    st.subheader("Give your next question a starting point")
+    st.write("Manuals, reports, study notes and research papers are welcome. Add a PDF, then ask questions in its category.")
     with st.form("upload_form"):
-        file = st.file_uploader("Paper PDF", type=["pdf"], help="Choose a text-based PDF. Scanned documents need text recognition before upload.")
-        title = st.text_input("Paper title", max_chars=250, placeholder="The title printed on your paper")
+        file = st.file_uploader("PDF document", type=["pdf"], help="Choose a text-based PDF. Scanned documents need text recognition before upload.")
+        title = st.text_input("Document title", max_chars=250, placeholder="A name you will recognize in your sources")
         col_domain, col_language = st.columns(2)
         with col_domain:
-            domain = st.selectbox("Research domain", DOMAINS, key="upload_domain", help="Use this same domain when asking questions.")
+            domain = st.selectbox("Document category", DOMAINS, format_func=CATEGORY_LABELS.get, key="upload_domain", help="Use this same category when asking questions.")
         with col_language:
-            language = st.selectbox("Paper language", list(LANGUAGES), format_func=LANGUAGES.get)
-        uploaded = st.form_submit_button("Index paper", type="primary", use_container_width=True)
+            language = st.selectbox("Document language", list(LANGUAGES), format_func=LANGUAGES.get)
+        with st.expander("Optional: research paper settings"):
+            exclude_references = st.checkbox("Skip reference sections", value=False, help="Stops at a detected References or Bibliography heading and ignores everything after it. Leave off to keep the full document.")
+        uploaded = st.form_submit_button("Make PDF searchable", type="primary", use_container_width=True)
     if uploaded:
         if not file or not title.strip():
-            st.warning("Choose a PDF and enter its title.")
+            st.warning("Choose a PDF and give your document a title.")
         else:
-            with st.spinner("Extracting and indexing your paper..."):
-                body = post("ingest", files={"file": (file.name, file.getvalue(), "application/pdf")}, data={"paper_title": title.strip(), "domain": domain, "language": language})
+            with st.spinner("Making your document searchable..."):
+                body = post("ingest", files={"file": (file.name, file.getvalue(), "application/pdf")}, data={"paper_title": title.strip(), "domain": domain, "language": language, "exclude_references": str(exclude_references).lower()})
             if body is not None:
                 if isinstance(body, dict) and isinstance(body.get("inserted_chunks"), int):
                     st.session_state.last_indexed = {"title": title.strip(), "domain": domain}
@@ -101,28 +107,28 @@ with tab_upload:
                     st.error("The service returned an incomplete indexing result. Please check before uploading again.")
     if "last_indexed" in st.session_state:
         paper = st.session_state.last_indexed
-        st.success(f"Paper indexed: {paper['title']}. Next, open Ask your papers. The {paper['domain']} domain is already selected.")
+        st.success(f"Document ready: {paper['title']}. Next, open Ask your documents. The {CATEGORY_LABELS[paper['domain']]} category is already selected.")
     else:
-        st.caption("Your paper becomes searchable after indexing finishes. There are no preloaded sample papers.")
+        st.caption("Text-based PDFs up to 10 MB. Scanned pages need OCR before upload. No sample documents are preloaded.")
 with tab_ask:
     st.subheader("What would you like to understand?")
-    st.write("Ask about a method, a finding or an assumption. Search the domain where your paper was indexed.")
+    st.write("Get to the detail you need: explain a concept, find a fact or summarize an idea. Search the category where your PDF was added.")
     if "last_indexed" in st.session_state:
         st.caption("Recently added in this session: " + st.session_state.last_indexed["title"])
     else:
-        st.info("New here? Start with Add a paper. If a paper is already in the shared library, choose its domain below.")
+        st.info("New here? Start with Add a PDF. If a document is already in the shared library, choose its category below.")
     with st.form("ask_form"):
-        question = st.text_area("Your question", placeholder="What assumptions does the proposed method rely on?", height=130, max_chars=8000)
+        question = st.text_area("Your question", placeholder="What are the key steps described in this document?", height=130, max_chars=8000)
         col_domain, col_language = st.columns(2)
         with col_domain:
-            domain = st.selectbox("Research domain", DOMAINS, key="ask_domain")
+            domain = st.selectbox("Document category", DOMAINS, format_func=CATEGORY_LABELS.get, key="ask_domain")
         with col_language:
             language = st.selectbox("Question language", ["en", "auto", "es", "fr", "it"], format_func=lambda x: "Detect automatically" if x == "auto" else LANGUAGES[x], help="Choose a language directly to avoid relying on automatic detection.")
         submitted = st.form_submit_button("Find an answer", type="primary", use_container_width=True)
     if submitted:
         st.session_state.pop("answer", None)
         if not question.strip():
-            st.warning("Enter a question to search your papers.")
+            st.warning("Enter a question to search your documents.")
         else:
             with st.spinner("Reading relevant passages..."):
                 body = post("ask", json={"question": question.strip(), "domain": domain, "source_language": None if language == "auto" else language})
@@ -138,14 +144,14 @@ with tab_ask:
         st.write(body["answer"])
         refs = body.get("references", [])
         if refs:
-            st.subheader("Retrieved papers")
-            st.caption("Return to these papers to check the context and supporting evidence.")
+            st.subheader("Source documents")
+            st.caption("These documents supplied the retrieved passages. Check the originals for context; titles do not verify every sentence.")
             for title in refs:
                 with st.container(border=True):
                     st.text(title)
         else:
-            st.info("No source papers to display. Add a paper in the selected domain, then ask again.")
+            st.info("No source documents to display. Add a PDF in the selected category, then ask again.")
     else:
-        st.caption("Your answer and retrieved paper titles will appear here after you ask a question.")
+        st.caption("Your answer and source document titles will appear here after you ask a question.")
 st.divider()
-st.caption("Made for close reading. English, Spanish, French and Italian. Always check important conclusions against the original paper.")
+st.caption("A clearer way through your documents. English, Spanish, French and Italian. Always check important conclusions against the original document.")

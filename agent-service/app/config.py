@@ -4,8 +4,8 @@ import os
 SUPPORTED_LANGUAGES = {"en", "es", "fr", "it"}
 SUPPORTED_DOMAINS = {"AI", "Security", "Other"}
 
-APP_NAME = "Between Papers Research API"
-APP_VERSION = "1.0.0"
+APP_NAME = "Between Papers Document API"
+APP_VERSION = "1.1.0"
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 GEMINI_LLM_MODEL = os.getenv("GEMINI_LLM_MODEL", "gemini-3-flash-preview")

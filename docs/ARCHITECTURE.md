@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart LR
-    User[Researcher] --> UI[Streamlit interface]
+    User[Reader] --> UI[Streamlit interface]
     UI -->|PDF or question over HTTP| API[FastAPI agent]
     API -->|Document and query embeddings| Gemini[External Gemini API]
     API -->|Context and question| Gemini
@@ -18,7 +18,7 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-    participant R as Researcher
+    participant R as Reader
     participant U as Streamlit
     participant A as Agent
     participant T as Translator
@@ -52,7 +52,7 @@ sequenceDiagram
 flowchart TD
     P[PDF upload] --> V{Valid type and size?}
     V -->|No| E[Reject with input error]
-    V -->|Yes| X[Extract text until reference heading]
+    V -->|Yes| X[Extract full text or optionally stop at reference heading]
     X --> C{Parseable text?}
     C -->|No| E
     C -->|Yes| S[Split into overlapping chunks]
@@ -74,7 +74,11 @@ LangGraph contains a pass-through retrieval node and a generation node. Retrieva
 actually occurs before graph invocation; this is not autonomous web research or
 a general tool-selecting agent. Recommendations choose the two most frequent
 paper titles among retrieved chunks. Similarity scores are not confidence scores.
-References are paper titles, not links, page citations, or verified claim spans.
+References contain document titles, not links, page citations, or verified claim spans.
+The legacy API field names `paper_title` and `domain` remain for compatibility.
+UI category General documents maps to `Other`; AI & technology maps to `AI`.
+The frontend sends `exclude_references=false` by default. Existing API clients
+that omit that field keep the original reference-excluding behavior.
 
 All users share one collection. There are no accounts, ownership filters,
 delete endpoints, OCR, automatic deduplication, or web search. Repeated uploads

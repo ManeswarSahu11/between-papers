@@ -11,7 +11,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import config
-from .pdf_utils import extract_text_without_references
+from .pdf_utils import extract_pdf_text
 from .rag_pipeline import build_generation_graph, get_embeddings_client, get_llm_client, split_text, to_references
 from .schemas import AskRequest, AskResponse, IngestResponse, RecommendedPaper
 from .translator_client import detect_language, translate
@@ -96,12 +96,13 @@ async def ingest_paper(
     paper_title: str = Form(...),
     domain: str = Form(...),
     language: str = Form(...),
+    exclude_references: bool = Form(True),
 ):
     _validate_domain(domain)
     _validate_language(language)
     paper_title = paper_title.strip()
     if not paper_title or len(paper_title.encode("utf-8")) > 1024:
-        raise HTTPException(status_code=400, detail="Provide a paper title up to 1024 UTF-8 bytes.")
+        raise HTTPException(status_code=400, detail="Provide a document title up to 1024 UTF-8 bytes.")
     if not (file.filename or "").lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF uploads are supported")
 
@@ -111,7 +112,7 @@ async def ingest_paper(
     if not file_bytes.startswith(b"%PDF-"):
         raise HTTPException(status_code=400, detail="The uploaded file is not a PDF.")
     try:
-        text = await run_in_threadpool(extract_text_without_references, file_bytes)
+        text = await run_in_threadpool(extract_pdf_text, file_bytes, exclude_references=exclude_references)
     except Exception as exc:
         raise HTTPException(status_code=400, detail="Could not read this PDF. Use an unencrypted, text-based PDF.") from exc
     if not text:
@@ -144,7 +145,7 @@ def ask_question(payload: AskRequest):
     retrieved_chunks = [r.text_chunk for r in search_results]
 
     if not search_results:
-        answer = "No indexed passages were found in this domain. Upload a paper in this domain first."
+        answer = "No indexed passages were found in this category. Upload a document in this category first."
         if source_language != "en":
             answer = provider_call(translate, answer, "en", source_language)
         return AskResponse(answer=answer, language=source_language, recommended_papers=[], references=[])

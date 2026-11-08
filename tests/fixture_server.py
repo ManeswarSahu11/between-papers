@@ -1,5 +1,6 @@
 """Deterministic UI test provider. Never deploy this fixture server."""
 import sys
+import os
 from pathlib import Path
 from unittest.mock import Mock
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'agent-service'))
@@ -19,4 +20,4 @@ def insert(collection, paper_title, domain, language, chunks, embeddings):
     return len(chunks)
 main.insert_chunks = insert
 main.search_similar = lambda collection, query_embedding, domain, top_k: [result for topic, result in stored if topic == domain][:top_k]
-uvicorn.run(main.app, host='127.0.0.1', port=18080)
+uvicorn.run(main.app, host='127.0.0.1', port=int(os.getenv("FIXTURE_PORT", "18080")))
