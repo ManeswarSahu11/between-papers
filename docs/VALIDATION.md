@@ -129,3 +129,9 @@ use direct language. Shared-library privacy is visible in the upload view.
 All 33 regression tests passed. Fixture browser checks passed at phone, tablet
 and desktop sizes, including PDF upload, category handoff, keyboard submission,
 answer/source rendering and page-width overflow checks.
+
+The clarity update `d060d7f` passed GitHub CI and public phone/tablet/desktop
+checks for upload-first navigation, question validation, browser title and page
+overflow. The frontend health endpoint returned HTTP 200. Public upload and
+question screenshots were refreshed. This frontend-only release does not
+revalidate external provider availability or full accessibility conformance.
