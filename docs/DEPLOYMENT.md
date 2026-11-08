@@ -5,7 +5,7 @@
 Three Render Docker web services were deployed on 8 November 2026 in Singapore,
 all with `plan: free`, using the Render API. Existing unrelated services were
 preserved. The agent runs `2873bfd38f98646141ec6f6ae65f5e21cad142e6`. The frontend
-runs interface update `d060d7f45bbbb50e08ec0a2b2c5b54c996804e48`. The unchanged translator runs
+runs interface update `93d6921b1742babc764af9092d3039d9ff081c62`. The unchanged translator runs
 `0e62affe945def11068fce93a97093595b7b75d3`.
 
 | Component | Public endpoint |

@@ -148,3 +148,15 @@ The replacement frontend at https://pagewise-3pqx.onrender.com passed public
 phone/tablet/desktop checks. A visual refresh uses a larger file drop zone,
 purple theme and selected navigation pills while retaining the existing forms.
 The full regression suite remains 33 passing tests.
+
+The clarity update `d060d7f` passed GitHub CI and public phone/tablet/desktop
+checks for upload-first navigation, question validation, browser title and page
+overflow. The frontend health endpoint returned HTTP 200. Public upload and
+question screenshots were refreshed. This frontend-only release does not
+revalidate external provider availability or full accessibility conformance.
+
+Release `93d6921` is live at https://pagewise-3pqx.onrender.com. The public
+phone/tablet/desktop checks confirmed the purple brand mark, upload-first
+navigation, question validation and no page-width overflow. Frontend health
+returned HTTP 200 and GitHub CI passed. The old frontend is retained as a
+rollback option; the new frontend uses the same backend and private settings.
