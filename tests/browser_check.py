@@ -28,7 +28,7 @@ with sync_playwright() as p:
     for name, width, height in [('phone', 390, 844), ('tablet', 768, 1024), ('desktop', 1440, 1500)]:
         page = browser.new_page(viewport={'width': width, 'height': height})
         page.goto(os.getenv('BROWSER_TEST_URL', 'http://127.0.0.1:18502'))
-        page.get_by_role('heading', name='Between Papers', exact=True).wait_for()
+        page.get_by_role('heading', name='Pagewise', exact=True).wait_for()
         assert page.get_by_role('tab').first.inner_text() == 'Add a PDF'
         assert page.get_by_role('tab', name='Add a PDF').get_attribute('aria-selected') == 'true'
         assert 'General documents' in page.locator('[role=tabpanel]:visible').get_by_test_id('stSelectbox').first.inner_text()

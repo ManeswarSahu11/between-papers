@@ -128,3 +128,9 @@ The blueprint has been checked locally for YAML syntax and free-plan declaration
 The running services were created through the API rather than this Blueprint.
 Their Docker images built and live workflows passed. Blueprint-flow acceptance
 has not been independently tested.
+
+## App name
+
+The app is now branded Pagewise. Existing `between-papers` repository and Render
+service identifiers are retained so existing URLs and service connections keep
+working. The brand update does not rename collections or move stored documents.

@@ -1,4 +1,4 @@
-# Translator Service for Between Papers
+# Translator Service for Pagewise
 
 This folder now contains a FastAPI translator service for GKE deployment.
 

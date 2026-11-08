@@ -38,7 +38,7 @@ def post(path, **kwargs):
     return None
 
 
-st.set_page_config(page_title="Between Papers", page_icon=":books:", layout="wide")
+st.set_page_config(page_title="Pagewise", page_icon=":books:", layout="wide")
 st.markdown("""
 <style>
 .block-container { max-width: 1120px; padding-top: 5rem; padding-bottom: 3rem; }
@@ -63,7 +63,7 @@ h1 { font-family: Georgia, serif !important; font-weight: 500 !important; font-s
 </style>
 <div class="workspace-kicker">LESS SEARCHING. MORE UNDERSTANDING.</div>
 """, unsafe_allow_html=True)
-st.title("Between Papers")
+st.title("Pagewise")
 st.markdown('<p class="workspace-intro">Your PDFs have a lot to say. Bring a manual, report, set of notes or research paper, and turn the pages into a conversation.</p>', unsafe_allow_html=True)
 st.markdown("""
 <div class="workflow" aria-label="How it works">

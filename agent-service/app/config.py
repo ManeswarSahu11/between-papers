@@ -4,7 +4,7 @@ import os
 SUPPORTED_LANGUAGES = {"en", "es", "fr", "it"}
 SUPPORTED_DOMAINS = {"AI", "Security", "Other"}
 
-APP_NAME = "Between Papers Document API"
+APP_NAME = "Pagewise Document API"
 APP_VERSION = "1.1.0"
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")

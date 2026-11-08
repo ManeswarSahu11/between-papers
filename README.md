@@ -1,8 +1,8 @@
-# Between Papers
+# Pagewise
 
-**Discover connections across research.**
+**Understand your PDFs, one question at a time.**
 
-**[Open Between Papers](https://between-papers.onrender.com)** ? hosted on Render free services.
+**[Open Pagewise](https://between-papers.onrender.com)** ? hosted on Render free services.
 The first request after inactivity can take longer while services wake up.
 
 [![Python checks](https://github.com/ManeswarSahu11/between-papers/actions/workflows/checks.yml/badge.svg)](https://github.com/ManeswarSahu11/between-papers/actions/workflows/checks.yml)
@@ -21,7 +21,7 @@ then ask in one of four languages and review the source document titles.
 
 ## Workspace preview
 
-![Between Papers PDF upload workspace](docs/images/live-upload.png)
+![Pagewise PDF upload workspace](docs/images/live-upload.png)
 
 Real public deployment capture of the upload-first workspace.
 [Live answer view](docs/images/live-desktop.png) uses a generated verification

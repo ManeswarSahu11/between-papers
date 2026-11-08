@@ -39,7 +39,7 @@ def _collection_schema() -> CollectionSchema:
         FieldSchema(name="text_chunk", dtype=DataType.VARCHAR, max_length=65535),
         FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=config.MILVUS_DIMENSION),
     ]
-    return CollectionSchema(fields=fields, description="Academic paper chunks for Between Papers")
+    return CollectionSchema(fields=fields, description="Document chunks for Pagewise")
 
 
 def ensure_collection(index_type: str = "HNSW") -> Collection:
