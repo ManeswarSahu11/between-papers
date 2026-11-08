@@ -1,0 +1,46 @@
+# All services explicitly use free compute. Providers must be configured separately.
+envVarGroups:
+  - name: between-papers-service-access
+    envVars:
+      - key: API_ACCESS_TOKEN
+        generateValue: true
+services:
+  - type: web
+    name: between-papers-api
+    runtime: docker
+    plan: free
+    dockerContext: ./agent-service
+    dockerfilePath: ./agent-service/Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - fromGroup: between-papers-service-access
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: MILVUS_URI
+        sync: false
+      - key: MILVUS_TOKEN
+        sync: false
+      - key: MILVUS_INDEX_TYPE
+        value: AUTOINDEX
+      - key: TRANSLATOR_BASE_URL
+        sync: false
+  - type: web
+    name: between-papers-translator
+    runtime: docker
+    plan: free
+    dockerContext: ./Docker-NLP
+    dockerfilePath: ./Docker-NLP/Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - fromGroup: between-papers-service-access
+  - type: web
+    name: between-papers
+    runtime: docker
+    plan: free
+    dockerContext: ./frontend
+    dockerfilePath: ./frontend/Dockerfile
+    healthCheckPath: /_stcore/health
+    envVars:
+      - fromGroup: between-papers-service-access
+      - key: AGENT_BASE_URL
+        sync: false

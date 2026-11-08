@@ -1,0 +1,57 @@
+# Validation record
+
+Checked 8 November 2026 on Windows with Python 3.12.4.
+
+| Check | Result | Scope |
+| --- | --- | --- |
+| Initial source compilation | Passed | All three Python services |
+| Initial test discovery | No tests existed | Baseline had no regression suite |
+| Regression suite | 28 passed | Agent API, translator logic, Streamlit forms |
+| Dependency consistency | Passed | Isolated agent/frontend environment |
+| Browser interactions | Passed | Chromium at 390?844, 768?1024, 1440?1500 |
+| Mermaid rendering | 5 passed | Actual rendering using Mermaid 11.12.2 |
+| Markdown links and images | Passed | First-party relative references |
+| Public deployment | Pending | Account connection and providers needed |
+
+Browser checks upload a generated text PDF, validate required fields, submit a
+question by keyboard, and display an answer and retrieved title. There was no
+page-width overflow at those sizes. A tablet sidebar overlay was reproduced and
+fixed by moving help into an inline expandable panel. Real screenshots in
+`docs/images/` use an explicitly labelled deterministic provider fixture.
+
+API regressions cover missing credentials, whitespace questions, malformed,
+blank and oversized PDFs, domain filtering, empty retrieval without model
+invocation, multilingual routing, service-token rejection, sanitized provider
+errors, title normalization, reference-section exclusion and cosine scoring.
+Translator logic tests substitute its upstream dependency; they do not validate
+installation or the live unofficial translation service.
+
+## Reproduce
+
+See [setup](SETUP.md) for the environment. Run `python -m pytest -q` and
+`python -m pip check`. For browser checks, install Chromium with
+`python -m playwright install chromium`, start `python tests/fixture_server.py`,
+and run Streamlit from `frontend/` with `AGENT_BASE_URL=http://127.0.0.1:18080`
+and port 18502. Then run `python tests/browser_check.py`.
+**Never deploy the fixture server.** It substitutes deterministic provider output.
+Run `python tests/doc_check.py` to check relative references and render diagrams;
+it downloads a pinned Mermaid runtime and requires network access.
+
+## Remaining limitations
+
+- Live Gemini generation, embedding dimensions, Milvus indexing and cloud
+  credentials have not been verified. Provider availability is not inferred from fixtures.
+- The translator still uses the inherited unofficial googletrans client and
+  legacy HTTP stack. Keep it isolated; upstream compatibility is unverified.
+- Installed dependencies emit deprecation warnings, including the inherited
+  Gemini SDK and Milvus ORM. A supported SDK migration remains follow-up work.
+- Docker and Terraform are unavailable in this environment. Image builds,
+  Kubernetes rollout and production resource usage are unverified.
+- No automated accessibility audit, screen-reader session or complete WCAG
+  conformance test has been performed. Keyboard submission and responsive
+  interactions were tested.
+- External links are retained as attribution or primary documentation; private
+  dataset contents and redistribution rights are not verified. Legacy upstream
+  README examples are preserved and excluded from first-party link checks.
+- No security audit, load benchmark, tenant isolation, OCR, deduplication or
+  claim-level citation verification is supplied.

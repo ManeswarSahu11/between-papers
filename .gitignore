@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+*.tfstate*
+.terraform/
+*.tfvars
+test-results/
+.local/
+!infra/k8s/secret.example.yaml
