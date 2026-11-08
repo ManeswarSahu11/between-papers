@@ -2,9 +2,39 @@
 
 ## Free hosting constraints
 
-No cloud resources have been provisioned by this revision. The inherited GKE
-manifests and Terraform describe a resource-consuming deployment, not a free
-hosting plan. Do not apply them without checking costs in your own account.
+Three Render Docker web services were deployed on 8 November 2026 in Singapore,
+all with `plan: free`, using the Render API. Existing unrelated services were
+preserved. Runtime source commit: `0e62affe945def11068fce93a97093595b7b75d3`.
+
+| Component | Public endpoint |
+| --- | --- |
+| Workspace | https://between-papers.onrender.com |
+| Agent health | https://between-papers-api.onrender.com/healthz |
+| Translator health | https://between-papers-translator.onrender.com/healthz |
+
+The homepage, frontend health, agent readiness, denied API access, PDF ingestion,
+English and Spanish answers with source titles, French detection and French/Italian
+translation passed live checks. See [validation](VALIDATION.md) for scope.
+
+```mermaid
+flowchart LR
+    U[Public browser] --> F[Render Streamlit free service]
+    F -->|HTTPS and service token| A[Render agent free service]
+    A -->|HTTPS and service token| T[Render translator free service]
+    A --> G[External Gemini API]
+    A --> Z[External Zilliz collection]
+    T --> GT[External Google Translate]
+```
+
+Environment values are set privately on the services. The local deployment key
+stays in ignored `.env` and is not sent to application containers. Automatic
+deployments are disabled; use Render to explicitly redeploy source changes after
+checks pass. The repository can contain newer documentation than the deployed
+runtime commit.
+
+The inherited GKE manifests and Terraform describe an optional resource-consuming
+deployment, not the live hosting infrastructure or a free hosting plan. Do not
+apply them without checking costs in your own account.
 
 The [Render free service documentation](https://render.com/docs/free) describes
 idle spin-down and ephemeral storage. Checked 8 November 2026; service and
@@ -12,7 +42,8 @@ account limits can change and may differ by region. A persistent Milvus server
 is not provided by a free Render web service. Hosting only the interface without
 a working agent, credentials and database is not a complete deployment.
 
-A free full deployment needs a separately provisioned compatible vector service,
+The live deployment uses a separately provisioned Zilliz vector service.
+Reproducing this deployment needs a compatible vector service,
 model API access within the account's free allowance, and hosting capacity for
 the Python services. No paid plan is authorized. The original multi-service
 architecture is retained rather than replaced with an undisclosed demo fallback.
@@ -76,7 +107,7 @@ prove a generation call will succeed. Frontend health is `/_stcore/health`.
 No successful deployment should be inferred from configuration files alone.
 
 
-## Render blueprint (prepared, not deployed)
+## Render blueprint (alternative setup)
 
 [`render.yaml`](../render.yaml) declares three Docker web services with `plan: free`
 and one generated shared service token. Connect the repository in Render and use
@@ -92,5 +123,6 @@ small for the agent plus its Python dependencies. Validate actual resource use
 before claiming compatibility. Do not upgrade to a paid instance automatically.
 
 The blueprint has been checked locally for YAML syntax and free-plan declarations.
-Render-side acceptance, image builds and live workflows require the connected
-account, provider credentials and a deployment run.
+The running services were created through the API rather than this Blueprint.
+Their Docker images built and live workflows passed. Blueprint-flow acceptance
+has not been independently tested.

@@ -2,6 +2,11 @@
 
 **Discover connections across research.**
 
+**[Open Between Papers](https://between-papers.onrender.com)** ? hosted on Render free services.
+The first request after inactivity can take longer while services wake up.
+
+[![Python checks](https://github.com/ManeswarSahu11/between-papers/actions/workflows/checks.yml/badge.svg)](https://github.com/ManeswarSahu11/between-papers/actions/workflows/checks.yml)
+
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![Interface Streamlit](https://img.shields.io/badge/Interface-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
 ![API FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)
@@ -16,10 +21,11 @@ review the paper titles that supplied retrieved context.
 
 ## Workspace preview
 
-![Between Papers desktop workspace](docs/images/desktop.png)
+![Between Papers live desktop workspace](docs/images/live-desktop.png)
 
-Real application capture using a clearly labelled deterministic test paper and
-provider fixture. This demonstrates the interface, not a live Gemini result.
+Real public deployment capture using a generated verification paper, live Gemini
+and Zilliz retrieval. The sample paper was removed after the check; it is not
+preloaded content. The phone and tablet images below use deterministic fixtures.
 [Phone view](docs/images/phone.png) ? [Tablet view](docs/images/tablet.png)
 
 ## What you can do

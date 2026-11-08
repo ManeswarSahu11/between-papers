@@ -13,7 +13,9 @@ Checked 8 November 2026 on Windows with Python 3.12.4.
 | Markdown links and images | Passed | First-party relative references |
 | Live provider connections | Passed | Zilliz authentication, 3072-dimension Gemini embedding and generation |
 | Live PDF-to-answer workflow | Passed | Real PDF extraction, embedding, Zilliz retrieval, Gemini answer and source title |
-| Public deployment | Pending | Render account connection and hosting verification needed |
+| Public deployment | Passed | Three Render Docker services, free plan, Singapore |
+| Public browser checks | Passed | Phone/tablet validation and desktop live PDF-to-answer workflow |
+| Live multilingual checks | Passed | Spanish question/answer, French detection and French/Italian translation |
 
 Browser checks upload a generated text PDF, validate required fields, submit a
 question by keyboard, and display an answer and retrieved title. There was no
@@ -47,15 +49,27 @@ it downloads a pinned Mermaid runtime and requires network access.
   returned the expected paper title. This is a connectivity and workflow check,
   not a quality benchmark. Initial collection deletion timed out; a subsequent
   collection-list check confirmed no temporary test collections remained.
-- Public hosting, live translation and performance under concurrent load remain
-  unverified. Account-specific success does not establish provider availability
-  for other regions or accounts.
+- Public checks passed on 8 November 2026 at https://between-papers.onrender.com
+  against runtime commit `0e62affe945def11068fce93a97093595b7b75d3`. The homepage
+  and frontend, agent and translator health endpoints returned HTTP 200. Authorized
+  agent readiness returned 200 and unauthenticated readiness returned 401.
+- A public browser test indexed a generated PDF and received the correct English
+  answer and source title through real Gemini/Zilliz providers. A Spanish question
+  also returned the expected translated answer and source. French detection and
+  translation to French and Italian passed. The uniquely titled test paper was
+  deleted afterward and absence confirmed; existing papers were preserved.
+- Public browser checks covered 390?844, 768?1024 and 1440?1500 viewports.
+  `docs/images/live-desktop.png` captures the actual public answer.
+- Performance under concurrent load and long-idle cold starts remain unverified.
+  Account-specific success does not establish availability for other regions or accounts.
 - The translator still uses the inherited unofficial googletrans client and
-  legacy HTTP stack. Keep it isolated; upstream compatibility is unverified.
+  legacy HTTP stack. It runs in an isolated container; live calls passed, but
+  long-term upstream compatibility is not guaranteed.
 - Installed dependencies emit deprecation warnings, including the inherited
   Gemini SDK and Milvus ORM. A supported SDK migration remains follow-up work.
-- Docker and Terraform are unavailable in this environment. Image builds,
-  Kubernetes rollout and production resource usage are unverified.
+- Docker and Terraform are unavailable locally. All three images built on Render
+  and ran successfully for the checks. Kubernetes rollout, sustained resource
+  usage and free instance-hour longevity remain unverified.
 - No automated accessibility audit, screen-reader session or complete WCAG
   conformance test has been performed. Keyboard submission and responsive
   interactions were tested.
